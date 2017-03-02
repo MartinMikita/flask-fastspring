@@ -42,7 +42,14 @@ function fastspringOnPopupClosed(data) {
       if (xhr.status === 200) {
         window.location.replace("{{ request.url }}");
       } else if (xhr.status === 201 || (301 <= xhr.status && xhr.status <= 303)) {
-        window.location.replace(xhr.getResponseHeader("Location"));
+        var link = xhr.responseText;
+        if (link.startsWith("http") || link.startsWith("/"))
+            window.location.replace(link);
+        link = xhr.getResponseHeader("Location");
+        if (link)
+            window.location.replace(link);
+        else
+            window.location.replace("{{ request.url }}");
       } else {
         var message = "ERROR: Could not process order: " + data["reference"];
         console.log(message);
